@@ -61,7 +61,6 @@ A{14} = speedgrid; modelType{14} = [0 0 1 0];
 A{15} = thetagrid; modelType{15} = [0 0 0 1];
 
 % compute a filter, which will be used to smooth the firing rate
-% filter = gaussmf(-4:4,[2 0]); filter = filter/sum(filter); 
 filter = gaussian(-4:4, 2, 0); filter = filter/sum(filter); 
 dt = post(3)-post(2); fr = spiketrain/dt;
 smooth_fr = conv(fr,filter,'same');
@@ -70,7 +69,6 @@ smooth_fr = conv(fr,filter,'same');
 numFolds = 10;
 
 for n = 1:numModels
-%for n = 2
     fprintf('\t- Fitting model %d of %d\n', n, numModels);
     [testFit{n},trainFit{n},param{n}] = fit_model(A{n},dt,spiketrain,filter,modelType{n},numFolds);
 end
