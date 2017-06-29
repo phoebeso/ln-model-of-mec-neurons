@@ -22,9 +22,16 @@
 
 clear all; close all; clc
 
-% load the data
-fprintf('(1/5) Loading data from example cell \n')
-load data_for_cell77
+% % load the data
+% fprintf('(1/5) Loading data from example cell \n')
+% load data_for_cell77
+
+fprintf('(1/5) Loading data from cells \n')
+load /mnt/vortex/phoebe/data/spikePos_openfield_D4.mat
+load /mnt/vortex/phoebe/data/thetaEEG_JZ1_day4_nt11.mat
+posStruct = JZ1spikesPosD4;
+thetaStruct6 = thetaEEG_JZ1_day4_epoch6_nt11;
+thetaStruct8 = thetaEEG_JZ1_day4_epoch8_nt11;
 
 % description of variables included:
 % boxSize = length (in cm) of one side of the square box
@@ -47,7 +54,7 @@ fit_all_ln_models
 %% find the simplest model that best describes the spike train
 fprintf('(3/5) Performing forward model selection\n')
 select_best_model
-
+                                                                                                                                                                                                                                                                                                                                                                                                                                                  
 %% Compute the firing-rate tuning curves
 fprintf('(4/5) Computing tuning curves\n')
 compute_all_tuning_curves

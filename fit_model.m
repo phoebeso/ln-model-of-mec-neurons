@@ -31,7 +31,7 @@ for k = 1:numFolds
     % get test data from edges - each test data chunk comes from entire session
     test_ind  = [edges(k):edges(k+1)-1 edges(k+numFolds):edges(k+numFolds+1)-1 ...
         edges(k+2*numFolds):edges(k+2*numFolds+1)-1 edges(k+3*numFolds):edges(k+3*numFolds+1)-1 ...
-        edges(k+4*numFolds):edges(k+4*numFolds+1)-1]   ;
+        edges(k+4*numFolds):edges(k+4*numFolds+1)-1];
     
     test_spikes = spiketrain(test_ind); %test spiking
     smooth_spikes_test = conv(test_spikes,filter,'same'); %returns vector same size as original
