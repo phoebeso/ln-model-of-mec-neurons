@@ -11,7 +11,8 @@ theta_vector = hd_vector;
 speed_vector = 2.5:50/n_speed_bins:47.5;
 
 % plot the tuning curves
-figure(1)
+figure(p);
+set(figure(p),'name',sprintf('Cell %d Figure',p),'numbertitle','off')
 subplot(3,4,1)
 imagesc(pos_curve); colorbar
 axis off
@@ -51,8 +52,8 @@ theta_param = param_full_model(numel(param_full_model)-n_theta_bins+1:numel(para
 % scale_factor_hd = mean(exp(speed_param))*mean(exp(pos_param))*mean(exp(theta_param))*50;
 % scale_factor_spd = mean(exp(pos_param))*mean(exp(hd_param))*mean(exp(theta_param))*50;
 % scale_factor_theta = mean(exp(speed_param))*mean(exp(hd_param))*mean(exp(pos_param))*50;
-scale_factor_pos = mean(exp(theta_param))*50;
-scale_factor_theta = mean(exp(pos_param))*50;
+scale_factor_pos = mean(exp(theta_param))*30; % 50 Hz vs 30 Hz for dt value 
+scale_factor_theta = mean(exp(pos_param))*30;
 
 % compute the model-derived response profiles
 pos_response = scale_factor_pos*exp(pos_param);
@@ -108,7 +109,7 @@ axis([0 2*pi min(min(theta_response),min(theta_curve)) max(max(theta_response),m
 LLH_increase_mean = mean(LLH_values);
 LLH_increase_sem = std(LLH_values)/sqrt(numFolds);
 
-figure(1)
+figure(p)
 subplot(3,4,9:12)
 errorbar(LLH_increase_mean,LLH_increase_sem,'ok','linewidth',3)
 hold on
@@ -117,10 +118,13 @@ plot(0.5:15.5,zeros(16,1),'--b','linewidth',2)
 hold off
 box off
 set(gca,'fontsize',20)
-set(gca,'XLim',[0 16]); set(gca,'XTick',1:15)
+% set(gca,'XLim',[0 16]); set(gca,'XTick',1:15)
+set(gca,'XLim',[0 4]); set(gca,'XTick',1:3)
 % set(gca,'XTickLabel',{'PHST','PHS','PHT','PST','HST','PH','PS','PT','HS',...
 %     'HT','ST','P','H','S','T'});
 set(gca,'XTickLabel',{'PT','P','T'});
 legend('Model performance','Selected model','Baseline')
-   
 
+saveas(figure(p),[pwd sprintf('/Cell_Figures/cell%d.fig',p)]);
+
+close
