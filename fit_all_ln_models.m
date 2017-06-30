@@ -11,29 +11,30 @@ n_dir_bins = 18;
 n_speed_bins = 10;
 n_theta_bins = 18;
 
-cellnum = 1; % which cell from JZ1spikesPosD4 is being analyzed
-numCells = length(posStruct);
-numTimeStamps = length(posStruct(cellnum).spikes);
-post = (0:1/30:(numTimeStamps-1)/30)';
+% retrieve data from specific cell
 sampleRate = 30;
-spikesRawData = posStruct(cellnum).spikes(:,1);
-starttime = round(thetaStruct6.starttime,6);
-endtime = round(thetaStruct6.endtime,6);
+eeg_sample_rate = 1500;
+n_time_bins = length(spikePosStruct(p).spikes);
+boxSize = 122;
 
-% list = zeros(length(thetaStruct6.data),1);
-i = round(1/1500,6); % sample rate of eeg 
-% list(:) = (starttime:i:starttime+((length(thetaStruct6.data)-1)*i));
-% list(:,2) = (starttime+0.000666:i:starttime+(length(thetaStruct6.data)*i));
-% [spikecounts, spikes] = list2vec(list,spikesRawData); % spiketrain dimensions too large, need to transform it to 4488x1
-n = length(thetaStruct6.data)/numTimeStamps;
-timeBins = (starttime:i*n:starttime+(length(thetaStruct6.data)*i));
-% spiketrain = histcounts(spikes,timeBins);
-spiketrain = histcounts(spikesRawData,timeBins)';
+epoch = spikePosStruct(p).index(2);
+if epoch == 6
+    post = posStruct6.data(:,1);
+    posx_c = posStruct6.data(:,2);
+    posy_c = posStruct6.data(:,3);
+    filt_eeg = thetaStruct6.data;
+elseif epoch == 8
+    post = posStruct8.data(:,1);
+    posx_c = posStruct8.data(:,2);
+    posy_c = posStruct8.data(:,3);
+    filt_eeg = thetaStruct8.data;
+end
+
+spiketimes = spikePosStruct(p).spikes(:,1);
+timebins = linspace(post(1),post(end)+post(3)-post(2),length(post)+1);
+spiketrain = histcounts(spiketimes,timebins)';
 
 % compute position matrix
-posx_c = posStruct(cellnum).spikes(:,2);
-posy_c = posStruct(cellnum).spikes(:,3);
-boxSize = 122;
 [posgrid, posVec] = pos_map([posx_c posy_c], n_pos_bins, boxSize);
 
 % % compute head direction matrix
@@ -43,16 +44,9 @@ boxSize = 122;
 % [speedgrid,speedVec,speed] = speed_map(posx_c,posy_c,n_speed_bins);
 
 % compute theta matrix
-filt_eeg6 = thetaStruct6.data;
-filt_eeg8 = thetaStruct8.data;
-if posStruct(cellnum).index(2) == 6
-    filt_eeg = filt_eeg6;
-else
-    filt_eeg = filt_eeg8;
-end
 [thetagrid,thetaVec,phase] = theta_map(filt_eeg,post,sampleRate,n_theta_bins);
 
-% remove times when the animal ran > 50 cm/s (these data points may contain artifacts)
+% % remove times when the animal ran > 50 cm/s (these data points may contain artifacts)
 % too_fast = find(speed >= 50);
 % posgrid(too_fast,:) = []; hdgrid(too_fast,:) = []; 
 % speedgrid(too_fast,:) = []; thetagrid(too_fast,:) = [];
