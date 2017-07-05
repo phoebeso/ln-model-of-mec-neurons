@@ -31,6 +31,11 @@ elseif epoch == 8
 end
 
 spiketimes = spikePosStruct(p).spikes(:,1);
+% spiketrain = zeros(size(post));
+% for i = 1:length(spiketimes)
+%     ind = find(post > spiketimes(i));
+%     spiketrain(ind) = spiketrain(ind) + 1;
+% end
 timebins = linspace(post(1),post(end)+post(3)-post(2),length(post)+1);
 spiketrain = histcounts(spiketimes,timebins)';
 

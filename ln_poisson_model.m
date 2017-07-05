@@ -19,8 +19,8 @@ hessian_glm = rX'*X;
 
 % initialize parameter-relevant variables
 J_pos = 0; J_pos_g = []; J_pos_h = []; 
-% J_hd = 0; J_hd_g = []; J_hd_h = [];  
-% J_spd = 0; J_spd_g = []; J_spd_h = [];  
+% J_hd = 0; J_hd_g = []; J_hd_h = []; 
+% J_spd = 0; J_spd_g = []; J_spd_h = []; 
 J_theta = 0; J_theta_g = []; J_theta_h = [];  
 
 % find the parameters

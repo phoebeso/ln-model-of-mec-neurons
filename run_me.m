@@ -27,11 +27,15 @@ clear all; close all; clc
 % load data_for_cell77
 
 fprintf('(1/5) Loading data from cells \n')
-load /mnt/vortex/phoebe/data/spikePos_openfield_D4.mat
-load /mnt/vortex/phoebe/data/thetaEEG_JZ1_day4_nt11.mat
-posStruct = JZ1spikesPosD4;
+load spikePos_openfield_D4.mat
+load thetaEEG_JZ1_day4_nt11.mat
+load JZ1posday4.mat
+posStruct6 = pos{1,4}{1,6};
+posStruct8 = pos{1,4}{1,8};
+spikePosStruct = JZ1spikesPosD4;
 thetaStruct6 = thetaEEG_JZ1_day4_epoch6_nt11;
 thetaStruct8 = thetaEEG_JZ1_day4_epoch8_nt11;
+numCells = length(spikePosStruct); % number of cells being analyzed 
 
 % description of variables included:
 % boxSize = length (in cm) of one side of the square box
@@ -47,18 +51,26 @@ thetaStruct8 = thetaEEG_JZ1_day4_epoch8_nt11;
 % eeg_sample_rate = sample rate of filt_eeg (250 Hz)
 % sampleRate = sampling rate of neural data and behavioral variable (50Hz)
 
-%% fit the model
-fprintf('(2/5) Fitting all linear-nonlinear (LN) models\n')
-fit_all_ln_models
+%% loop through all cells 
+for p = 1:20
+    clc
+    
+%     if length(posStruct(p).spikes) > 50
+    %% fit the model
+    fprintf('(2/5) Cell %d: Fitting all linear-nonlinear (LN) models\n',p)
+    fit_all_ln_models
 
-%% find the simplest model that best describes the spike train
-fprintf('(3/5) Performing forward model selection\n')
-select_best_model
+    %% find the simplest model that best describes the spike train
+    fprintf('(3/5) Cell %d: Performing forward model selection\n',p)
+    select_best_model
                                                                                                                                                                                                                                                                                                                                                                                                                                                   
-%% Compute the firing-rate tuning curves
-fprintf('(4/5) Computing tuning curves\n')
-compute_all_tuning_curves
+    %% Compute the firing-rate tuning curves
+    fprintf('(4/5) Cell %d: Computing tuning curves\n',p)
+    compute_all_tuning_curves
 
-%% plot the results
-fprintf('(5/5) Plotting performance and parameters\n') 
-plot_performance_and_parameters
+    %% plot the results
+    fprintf('(5/5) Cell %d: Plotting performance and parameters\n',p) 
+    plot_performance_and_parameters
+%     end
+    
+end
