@@ -52,7 +52,7 @@ numCells = length(spikePosStruct); % number of cells being analyzed
 % sampleRate = sampling rate of neural data and behavioral variable (50Hz)
 
 %% loop through all cells 
-for p = 1:20
+for p = 1:numCells
     clc
     
 %     if length(posStruct(p).spikes) > 50
