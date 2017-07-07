@@ -55,7 +55,6 @@ numCells = length(spikePosStruct); % number of cells being analyzed
 for p = 1:numCells
     clc
     
-%     if length(posStruct(p).spikes) > 50
     %% fit the model
     fprintf('(2/5) Cell %d: Fitting all linear-nonlinear (LN) models\n',p)
     fit_all_ln_models
@@ -71,6 +70,5 @@ for p = 1:numCells
     %% plot the results
     fprintf('(5/5) Cell %d: Plotting performance and parameters\n',p) 
     plot_performance_and_parameters
-%     end
     
 end

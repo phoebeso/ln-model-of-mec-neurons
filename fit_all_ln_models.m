@@ -22,36 +22,33 @@ if epoch == 6
     post = posStruct6.data(:,1);
     posx_c = posStruct6.data(:,2);
     posy_c = posStruct6.data(:,3);
+    direction = posStruct6.data(:,4);
     filt_eeg = thetaStruct6.data;
 elseif epoch == 8
     post = posStruct8.data(:,1);
     posx_c = posStruct8.data(:,2);
     posy_c = posStruct8.data(:,3);
+    direction = posStruct8.data(:,4);
     filt_eeg = thetaStruct8.data;
 end
 
 spiketimes = spikePosStruct(p).spikes(:,1);
-% spiketrain = zeros(size(post));
-% for i = 1:length(spiketimes)
-%     ind = find(post > spiketimes(i));
-%     spiketrain(ind) = spiketrain(ind) + 1;
-% end
 timebins = linspace(post(1),post(end)+post(3)-post(2),length(post)+1);
 spiketrain = histcounts(spiketimes,timebins)';
 
 % compute position matrix
 [posgrid, posVec] = pos_map([posx_c posy_c], n_pos_bins, boxSize);
 
-% % compute head direction matrix
-% [hdgrid,hdVec,direction] = hd_map(posx,posx2,posy,posy2,n_dir_bins);
-% 
-% % compute speed matrix
-% [speedgrid,speedVec,speed] = speed_map(posx_c,posy_c,n_speed_bins);
+% compute head direction matrix
+[hdgrid,hdVec,direction] = hd_map(direction,n_dir_bins);
+
+% compute speed matrix
+[speedgrid,speedVec,speed] = speed_map(posx_c,posy_c,n_speed_bins);
 
 % compute theta matrix
 [thetagrid,thetaVec,phase] = theta_map(filt_eeg,post,sampleRate,n_theta_bins);
 
-% % remove times when the animal ran > 50 cm/s (these data points may contain artifacts)
+% remove times when the animal ran > 50 cm/s (these data points may contain artifacts)
 % too_fast = find(speed >= 50);
 % posgrid(too_fast,:) = []; hdgrid(too_fast,:) = []; 
 % speedgrid(too_fast,:) = []; thetagrid(too_fast,:) = [];
@@ -60,36 +57,32 @@ spiketrain = histcounts(spiketimes,timebins)';
 
 %% Fit all 15 LN models
 
-% numModels = 15;
-numModels = 3;
+numModels = 15;
 testFit = cell(numModels,1);
 trainFit = cell(numModels,1);
 param = cell(numModels,1);
 A = cell(numModels,1);
 modelType = cell(numModels,1);
 
-% % ALL VARIABLES
-% A{1} = [ posgrid hdgrid speedgrid thetagrid]; modelType{1} = [1 1 1 1];
-% % THREE VARIABLES
-% A{2} = [ posgrid hdgrid speedgrid ]; modelType{2} = [1 1 1 0];
-% A{3} = [ posgrid hdgrid  thetagrid]; modelType{3} = [1 1 0 1];
-% A{4} = [ posgrid  speedgrid thetagrid]; modelType{4} = [1 0 1 1];
-% A{5} = [  hdgrid speedgrid thetagrid]; modelType{5} = [0 1 1 1];
-% % TWO VARIABLES
-% A{6} = [ posgrid hdgrid]; modelType{6} = [1 1 0 0];
-% A{7} = [ posgrid  speedgrid ]; modelType{7} = [1 0 1 0];
-% A{8} = [ posgrid   thetagrid]; modelType{8} = [1 0 0 1];
-% A{9} = [  hdgrid speedgrid ]; modelType{9} = [0 1 1 0];
-% A{10} = [  hdgrid  thetagrid]; modelType{10} = [0 1 0 1];
-% A{11} = [  speedgrid thetagrid]; modelType{11} = [0 0 1 1];
-% % ONE VARIABLE
-% A{12} = posgrid; modelType{12} = [1 0 0 0];
-% A{13} = hdgrid; modelType{13} = [0 1 0 0];
-% A{14} = speedgrid; modelType{14} = [0 0 1 0];
-% A{15} = thetagrid; modelType{15} = [0 0 0 1];
-A{1} = [ posgrid thetagrid]; modelType{1} = [1 1];
-A{2} = posgrid; modelType{2} = [1 0];
-A{3} = thetagrid; modelType{3} = [0 1];
+% ALL VARIABLES
+A{1} = [ posgrid hdgrid speedgrid thetagrid]; modelType{1} = [1 1 1 1];
+% THREE VARIABLES
+A{2} = [ posgrid hdgrid speedgrid ]; modelType{2} = [1 1 1 0];
+A{3} = [ posgrid hdgrid  thetagrid]; modelType{3} = [1 1 0 1];
+A{4} = [ posgrid  speedgrid thetagrid]; modelType{4} = [1 0 1 1];
+A{5} = [  hdgrid speedgrid thetagrid]; modelType{5} = [0 1 1 1];
+% TWO VARIABLES
+A{6} = [ posgrid hdgrid]; modelType{6} = [1 1 0 0];
+A{7} = [ posgrid  speedgrid ]; modelType{7} = [1 0 1 0];
+A{8} = [ posgrid   thetagrid]; modelType{8} = [1 0 0 1];
+A{9} = [  hdgrid speedgrid ]; modelType{9} = [0 1 1 0];
+A{10} = [  hdgrid  thetagrid]; modelType{10} = [0 1 0 1];
+A{11} = [  speedgrid thetagrid]; modelType{11} = [0 0 1 1];
+% ONE VARIABLE
+A{12} = posgrid; modelType{12} = [1 0 0 0];
+A{13} = hdgrid; modelType{13} = [0 1 0 0];
+A{14} = speedgrid; modelType{14} = [0 0 1 0];
+A{15} = thetagrid; modelType{15} = [0 0 0 1];
 
 % compute a filter, which will be used to smooth the firing rate
 filter = gaussian(-4:4, 2, 0); filter = filter/sum(filter); 

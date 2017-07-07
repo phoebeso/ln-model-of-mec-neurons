@@ -11,24 +11,29 @@ theta_vector = hd_vector;
 speed_vector = 2.5:50/n_speed_bins:47.5;
 
 % plot the tuning curves
-figure(p);
-set(figure(p),'name',sprintf('Cell %d Figure',p),'numbertitle','off')
+figure('Name', sprintf('Cell %d Figure',p), 'Numbertitle', 'off')
 subplot(3,4,1)
 imagesc(pos_curve); colorbar
+xlim_min = max(0,floor(min(posx_c)/(boxSize/n_pos_bins)));
+xlim_max = min(20,floor(max(posx_c)/(boxSize/n_pos_bins))+1);
+ylim_min = 20-min(20,floor(max(posy_c)/(boxSize/n_pos_bins)));
+ylim_max = 20-max(0,floor(min(posy_c)/(boxSize/n_pos_bins)));
+xlim([xlim_min xlim_max])
+ylim([ylim_min ylim_max])
 axis off
 title('Position')
-% subplot(3,4,2)
-% plot(hd_vector,hd_curve,'k','linewidth',3)
-% box off
-% axis([0 2*pi -inf inf])
-% xlabel('direction angle')
-% title('Head direction')
-% subplot(3,4,3)
-% plot(speed_vector,speed_curve,'k','linewidth',3)
-% box off
-% xlabel('Running speed')
-% axis([0 50 -inf inf])
-% title('Speed')
+subplot(3,4,2)
+plot(hd_vector,hd_curve,'k','linewidth',3)
+box off
+axis([0 2*pi -inf inf])
+xlabel('direction angle')
+title('Head direction')
+subplot(3,4,3)
+plot(speed_vector,speed_curve,'k','linewidth',3)
+box off
+xlabel('Running speed')
+axis([0 50 -inf inf])
+title('Speed')
 subplot(3,4,4)
 plot(theta_vector,theta_curve,'k','linewidth',3)
 xlabel('Theta phase')
@@ -43,35 +48,33 @@ param_full_model = param{1};
 
 % pull out the parameter values
 pos_param = param_full_model(1:n_pos_bins^2);
-% hd_param = param_full_model(n_pos_bins^2+1:n_pos_bins^2+n_dir_bins);
-% speed_param = param_full_model(n_pos_bins^2+n_dir_bins+1:n_pos_bins^2+n_dir_bins+n_speed_bins);
+hd_param = param_full_model(n_pos_bins^2+1:n_pos_bins^2+n_dir_bins);
+speed_param = param_full_model(n_pos_bins^2+n_dir_bins+1:n_pos_bins^2+n_dir_bins+n_speed_bins);
 theta_param = param_full_model(numel(param_full_model)-n_theta_bins+1:numel(param_full_model));
 
 % compute the scale factors
-% scale_factor_pos = mean(exp(speed_param))*mean(exp(hd_param))*mean(exp(theta_param))*50;
-% scale_factor_hd = mean(exp(speed_param))*mean(exp(pos_param))*mean(exp(theta_param))*50;
-% scale_factor_spd = mean(exp(pos_param))*mean(exp(hd_param))*mean(exp(theta_param))*50;
-% scale_factor_theta = mean(exp(speed_param))*mean(exp(hd_param))*mean(exp(pos_param))*50;
-scale_factor_pos = mean(exp(theta_param))*30; % 50 Hz vs 30 Hz for dt value 
-scale_factor_theta = mean(exp(pos_param))*30;
+scale_factor_pos = mean(exp(speed_param))*mean(exp(hd_param))*mean(exp(theta_param))*30;
+scale_factor_hd = mean(exp(speed_param))*mean(exp(pos_param))*mean(exp(theta_param))*30;
+scale_factor_spd = mean(exp(pos_param))*mean(exp(hd_param))*mean(exp(theta_param))*30;
+scale_factor_theta = mean(exp(speed_param))*mean(exp(hd_param))*mean(exp(pos_param))*30;
 
 % compute the model-derived response profiles
 pos_response = scale_factor_pos*exp(pos_param);
-% hd_response = scale_factor_hd*exp(hd_param);
-% speed_response = scale_factor_spd*exp(speed_param);
+hd_response = scale_factor_hd*exp(hd_param);
+speed_response = scale_factor_spd*exp(speed_param);
 theta_response = scale_factor_theta*exp(theta_param);
 
 % plot the model-derived response profiles
 subplot(3,4,5)
 imagesc(reshape(pos_response,20,20)); axis off; 
-% subplot(3,4,6)
-% plot(hd_vector,hd_response,'k','linewidth',3)
-% xlabel('direction angle')
-% box off
-% subplot(3,4,7)
-% plot(speed_vector,speed_response,'k','linewidth',3)
-% xlabel('Running speed')
-% box off
+subplot(3,4,6)
+plot(hd_vector,hd_response,'k','linewidth',3)
+xlabel('Head direction angle')
+box off
+subplot(3,4,7)
+plot(speed_vector,speed_response,'k','linewidth',3)
+xlabel('Running speed')
+box off
 subplot(3,4,8)
 plot(theta_vector,theta_response,'k','linewidth',3)
 xlabel('Theta phase')
@@ -84,15 +87,15 @@ caxis([min(min(pos_response),min(pos_curve(:))) max(max(pos_response),max(pos_cu
 subplot(3,4,5)
 caxis([min(min(pos_response),min(pos_curve(:))) max(max(pos_response),max(pos_curve(:)))])
 
-% subplot(3,4,2)
-% axis([0 2*pi min(min(hd_response),min(hd_curve)) max(max(hd_response),max(hd_curve))])
-% subplot(3,4,6)
-% axis([0 2*pi min(min(hd_response),min(hd_curve)) max(max(hd_response),max(hd_curve))])
-% 
-% subplot(3,4,3)
-% axis([0 50 min(min(speed_response),min(speed_curve)) max(max(speed_response),max(speed_curve))])
-% subplot(3,4,7)
-% axis([0 50 min(min(speed_response),min(speed_curve)) max(max(speed_response),max(speed_curve))])
+subplot(3,4,2)
+axis([0 2*pi min(min(hd_response),min(hd_curve)) max(max(hd_response),max(hd_curve))])
+subplot(3,4,6)
+axis([0 2*pi min(min(hd_response),min(hd_curve)) max(max(hd_response),max(hd_curve))])
+
+subplot(3,4,3)
+axis([0 50 min(min(speed_response),min(speed_curve)) max(max(speed_response),max(speed_curve))])
+subplot(3,4,7)
+axis([0 50 min(min(speed_response),min(speed_curve)) max(max(speed_response),max(speed_curve))])
 
 subplot(3,4,4)
 axis([0 2*pi min(min(theta_response),min(theta_curve)) max(max(theta_response),max(theta_curve))])
@@ -109,7 +112,6 @@ axis([0 2*pi min(min(theta_response),min(theta_curve)) max(max(theta_response),m
 LLH_increase_mean = mean(LLH_values);
 LLH_increase_sem = std(LLH_values)/sqrt(numFolds);
 
-figure(p)
 subplot(3,4,9:12)
 errorbar(LLH_increase_mean,LLH_increase_sem,'ok','linewidth',3)
 hold on
@@ -118,13 +120,14 @@ plot(0.5:15.5,zeros(16,1),'--b','linewidth',2)
 hold off
 box off
 set(gca,'fontsize',20)
-% set(gca,'XLim',[0 16]); set(gca,'XTick',1:15)
-set(gca,'XLim',[0 4]); set(gca,'XTick',1:3)
-% set(gca,'XTickLabel',{'PHST','PHS','PHT','PST','HST','PH','PS','PT','HS',...
-%     'HT','ST','P','H','S','T'});
-set(gca,'XTickLabel',{'PT','P','T'});
-legend('Model performance','Selected model','Baseline')
+set(gca,'XLim',[0 16]); set(gca,'XTick',1:15)
+set(gca,'XTickLabel',{'PHST','PHS','PHT','PST','HST','PH','PS','PT','HS',...
+    'HT','ST','P','H','S','T'});
+legend('Model performance','Selected model','Baseline', 'Location', 'best')
 
-saveas(figure(p),[pwd sprintf('/Cell_Figures/cell%d.fig',p)]);
+set(gcf, 'PaperUnits', 'centimeters');
+set(gcf, 'PaperPosition', [0 0 45 30]);
+saveas(gcf,[pwd sprintf('/Cell_Figures/cell%d.png',p)]);
+saveas(gcf,[pwd sprintf('/Cell_Figures/cell%d.fig',p)]);
 
 close
